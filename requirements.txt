@@ -1,0 +1,6 @@
+openai
+pandas
+numpy
+pytest
+psycopg2-binary
+python-dotenv
