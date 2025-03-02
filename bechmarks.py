@@ -7,8 +7,8 @@ from agent import get_pg_connection, create_schema, ingest_json_file, execute_sq
 # List of dataset files to benchmark.
 DATASETS = [
     "sample_data.json",
-    "sample_data_large.json",
-    "sample_data_largest.json"
+    "sample_data_1K.json",
+    "sample_data_10K.json"
 ]
 
 def benchmark_ingestion_for_file(json_file, iterations=3):

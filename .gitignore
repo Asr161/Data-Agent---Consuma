@@ -7,3 +7,7 @@ venv/
 
 # Environment variables file (if you don't want to push secrets)
 .env
+
+sample_data.json
+sample_data_1K.json
+sample_data_10K.json
