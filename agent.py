@@ -512,6 +512,7 @@ Based on the user question:
 \"{user_query}\"
 
 Provide a clear and concise explanation of these results. Be as specific as possible.
+Remember that the source here is the social media platform, so when you get the source name, ensure you only talk about the name of the platform, uncless explicitly stated. 
 """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -538,7 +539,7 @@ def main():
     conn.close()  # Close ingestion connection.
     
     # Accept a user query to analyze the data.
-    user_query = ("What is the distribution of review counts by country of origin for Amazon products?").strip()
+    user_query = ("Amongst the amazon reviews, which product got the highest reviews?").strip()
     
     # Schema description for context (optional for LLM prompt).
     schema_description = """
