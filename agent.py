@@ -98,11 +98,9 @@ def create_schema(conn):
     """
     cursor = conn.cursor()
 
-    # Drop tables to ensure clean state
     cursor.execute("DROP TABLE IF EXISTS comments;")
     cursor.execute("DROP TABLE IF EXISTS posts;")
     
-    # Create posts table with columns for each required field.
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS posts (
         id SERIAL PRIMARY KEY,
@@ -123,7 +121,6 @@ def create_schema(conn):
     );
     """)
     
-    # Create comments table with a foreign key referencing posts.
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS comments (
         id SERIAL PRIMARY KEY,
@@ -194,7 +191,6 @@ def parse_date(date_str):
     if not date_str:
         return None
     try:
-        # Remove common leading text (e.g., "Reviewed in India on ")
         if " on " in date_str:
             parts = date_str.split(" on ", 1)
             date_str = parts[-1]
@@ -273,7 +269,6 @@ def ingest_record(conn, record):
     source = record.get("source", "unknown")
     raw_json_str = json.dumps(record, ensure_ascii=False)
     
-    # Initialize variables for post fields.
     title = None
     created_at = None
     asin = None
@@ -493,7 +488,7 @@ Only output the SQL query. The query should be **formatted as plain text**, with
         model="gpt-4-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
-        max_tokens=300,
+        max_tokens=500,
     )
     sql_query = response.choices[0].message.content.strip()
     return sql_query
@@ -525,7 +520,7 @@ Important: never halucinate or predict any result, unless explicity asked for. N
         model="gpt-4-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
-        max_tokens=300,
+        max_tokens=500,
     )
     explanation = response.choices[0].message.content.strip()
     return explanation
@@ -543,12 +538,11 @@ def main():
     
     # Ingest the JSON data into the database.
     ingest_json_file(conn, json_file_path)
-    conn.close()  # Close ingestion connection.
+    conn.close() 
     
     # Accept a user query to analyze the data.
     user_query = ("What is the average rating for Amazon products?").strip()
     
-    # Schema description for context (optional for LLM prompt).
     schema_description = """
 TABLE posts:
   id, source, title, created_at, asin, subreddit, url, description, channel_name, country_of_origin, price, currency, star_ratings, total_rating, raw_json
@@ -560,18 +554,18 @@ TABLE comments:
     # Generate SQL query from natural language using the LLM.
     print("\nGenerating SQL query from your natural language input...")
     sql_query = generate_sql_from_nl(user_query, schema_description)
-    print("\nGenerated SQL Query:")
-    print(sql_query)
+    # print("\nGenerated SQL Query:")
+    # print(sql_query)
     
     # Execute the SQL query and display results.
     results = execute_sql_query(sql_query)
-    print("\nQuery Results:")
-    print(json.dumps(results, indent=2, cls=DecimalEncoder))
+    # print("\nQuery Results:")
+    # print(json.dumps(results, indent=2, cls=DecimalEncoder))
     
     # Ask the LLM to explain the results.
-    # explanation = explain_results(results, user_query)
-    # print("\nExplanation:")
-    # print(explanation)
+    explanation = explain_results(results, user_query)
+    print("\nAnswer:")
+    print(explanation)
 
 if __name__ == "__main__":
     main()

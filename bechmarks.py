@@ -4,7 +4,6 @@ import time
 import json
 from agent import get_pg_connection, create_schema, ingest_json_file, execute_sql_query
 
-# List of dataset files to benchmark.
 DATASETS = [
     "sample_data.json",
     "sample_data_10K.json",
@@ -32,7 +31,6 @@ def benchmark_ingestion_for_file(json_file, iterations=3):
         elapsed = end - start
         total_time += elapsed
         
-        # Clean up tables for next iteration.
         cursor = conn.cursor()
         cursor.execute("TRUNCATE TABLE comments, posts RESTART IDENTITY CASCADE;")
         conn.commit()
@@ -60,8 +58,7 @@ def benchmark_query_for_file(query, iterations=3):
     return total_time / iterations, results
 
 def main():
-    # Define a sample query for benchmarking.
-    # For example: count posts by source.
+
     sample_query = "SELECT source, COUNT(*) AS total_posts FROM posts GROUP BY source;"
     
     # Dictionaries to store the benchmark results.

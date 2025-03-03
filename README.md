@@ -128,7 +128,7 @@ OPENAI_API_KEY=your_openai_api_key
 
 ### 6. Running the Data Agent
 
-In line 542 of agent.py, enter the prompt you wish to test.
+In the agent.py file, in line "user_query = ("Enter Query").strip()", enter the query you wish to test.
 Run the agent to ingest the dataset, generate SQL queries from natural language input, execute them, and explain the results:
 ```bash
 python agent.py
