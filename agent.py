@@ -22,9 +22,6 @@ Dependencies:
   - openai: For interacting with the OpenAI API.
   - python-dotenv: For loading environment variables from a .env file.
   - decimal: To handle Decimal objects returned by PostgreSQL.
-
-Author: [Your Name]
-Date: [Current Date]
 """
 
 import json
@@ -90,7 +87,7 @@ def get_pg_connection():
 # -----------------------
 def create_schema(conn):
     """
-    Creates the necessary tables in the PostgreSQL database if they do not already exist.
+     Drops existing tables (if they exist) and recreates them.
     
     Tables:
       - posts: Stores top-level post/product data.
@@ -100,6 +97,10 @@ def create_schema(conn):
         conn (psycopg2.extensions.connection): The database connection.
     """
     cursor = conn.cursor()
+
+    # Drop tables to ensure clean state
+    cursor.execute("DROP TABLE IF EXISTS comments;")
+    cursor.execute("DROP TABLE IF EXISTS posts;")
     
     # Create posts table with columns for each required field.
     cursor.execute("""
@@ -475,16 +476,21 @@ TABLE comments:
   income_band (TEXT)
 
 Additional Instructions:
+- If using aggregator functions (like count) dont forget to group by the field. 
+- If you order by something, then that thing must appear in the GROUP BY clause or be used in an aggregate function
+- Whenever theres an order by a field, ensure 'field'=null is filtered out
+- When asked to get average rating for an amazon product, take the average of the ratings of the reviews/comments for that product. If rating is already REAL, remove NULLIF(rating, '')::NUMERIC and just use AVG(rating).
 - When generating queries referring to source, use pattern matching (e.g., "WHERE source LIKE '%amazon%'") rather than exact equality.
 - Note: The 'created_at' field is stored as a string in the format 'YYYY-MM-DD'. Please cast it using posts.created_at::date.
+- When dealing with any information about product, try to ensure you give the title or product name and not the id number or something, unless asked for explicitly.
 
 Now, generate a SQL query that answers the following question:
 \"{user_query}\"
 
-Only output the SQL query.
+Only output the SQL query. The query should be **formatted as plain text**, without surrounding backticks (` ``` `) or any Markdown formatting.
 """
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
         max_tokens=300,
@@ -511,11 +517,12 @@ The following are the results from a database query:
 Based on the user question:
 \"{user_query}\"
 
-Provide a clear and concise explanation of these results. Be as specific as possible.
+Provide the best answer to the question using the query results. Be as specific as possible. In the answer dont mentione 'query', just give the answer as though you already had the data.
 Remember that the source here is the social media platform, so when you get the source name, ensure you only talk about the name of the platform, uncless explicitly stated. 
+Important: never halucinate or predict any result, unless explicity asked for. Never give projections or estimations if an exact quantity is asked.
 """
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
         max_tokens=300,
@@ -539,7 +546,7 @@ def main():
     conn.close()  # Close ingestion connection.
     
     # Accept a user query to analyze the data.
-    user_query = ("Amongst the amazon reviews, which product got the highest reviews?").strip()
+    user_query = ("What is the average rating for Amazon products?").strip()
     
     # Schema description for context (optional for LLM prompt).
     schema_description = """
@@ -562,9 +569,9 @@ TABLE comments:
     print(json.dumps(results, indent=2, cls=DecimalEncoder))
     
     # Ask the LLM to explain the results.
-    explanation = explain_results(results, user_query)
-    print("\nExplanation:")
-    print(explanation)
+    # explanation = explain_results(results, user_query)
+    # print("\nExplanation:")
+    # print(explanation)
 
 if __name__ == "__main__":
     main()

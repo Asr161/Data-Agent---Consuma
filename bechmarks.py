@@ -7,8 +7,8 @@ from agent import get_pg_connection, create_schema, ingest_json_file, execute_sq
 # List of dataset files to benchmark.
 DATASETS = [
     "sample_data.json",
-    "sample_data_1K.json",
-    "sample_data_10K.json"
+    "sample_data_10K.json",
+    "sample_data_50K.json"
 ]
 
 def benchmark_ingestion_for_file(json_file, iterations=3):
@@ -35,8 +35,6 @@ def benchmark_ingestion_for_file(json_file, iterations=3):
         # Clean up tables for next iteration.
         cursor = conn.cursor()
         cursor.execute("TRUNCATE TABLE comments, posts RESTART IDENTITY CASCADE;")
-        # cursor.execute("TRUNCATE TABLE comments RESTART IDENTITY;")
-        # cursor.execute("TRUNCATE TABLE posts RESTART IDENTITY;")
         conn.commit()
         conn.close()
     return total_time / iterations

@@ -144,9 +144,9 @@ The agent will:
 ---
 
 ### 7. Automated Testing
-Run the automated tests to verify ETL functionality and query correctness:
+Run the test queries to see the expected outputs:
 ```bash
-pytest tests/
+pytest test_queries/
 ```
 
 ---
@@ -156,7 +156,8 @@ Run the benchmark script to measure ingestion and query performance across diffe
 ```bash
 python benchmarks.py
 ```
-The benchmark script compares performance for `sample_data.json`, `sample_data_large.json`, and `sample_data_largest.json` and prints a summary table.
+The benchmark script compares performance for `sample_data.json`, `sample_data_10K.json`, and `sample_data_50K.json` and prints a summary table. The first one is the original
+data provided with the assignment. The second and third datasets are generated randomly using the faker library. 
 
 ---
 
@@ -199,27 +200,3 @@ The benchmark script compares performance for `sample_data.json`, `sample_data_l
 
 ---
 
-## Testing Materials
-
-### Automated Tests
-- **Test Suite:**  
-  A collection of tests (using pytest) ensures:
-  - Data is correctly ingested.
-  - Transformation logic is applied (dates, numbers, etc.).
-  - SQL queries return expected results.
-
-### Example Queries & Expected Outputs
-- **Query Examples:**
-  - "What are the distinct social media platforms present?"
-  - "By platform and gender, how many reviews and what is the average star rating?"
-  - "For Reddit posts, show the number of posts per month."
-- **Assertions:**  
-  The tests verify that the query results match expected values based on known sample data.
-
-### Performance Benchmarks
-- **Ingestion Benchmarks:**  
-  Measures the time taken to ingest various dataset sizes (`sample_data.json`, `sample_data_large.json`, `sample_data_largest.json`).
-- **Query Performance:**  
-  Measures the execution time of common queries to verify scalability.
-
----

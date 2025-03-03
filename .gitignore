@@ -1,13 +1,8 @@
-# Python cache files
 __pycache__/
 *.pyc
-
-# Virtual environment
 venv/
-
-# Environment variables file (if you don't want to push secrets)
 .env
-
 sample_data.json
-sample_data_1K.json
 sample_data_10K.json
+sample_data_50K.json
+data_gen.py

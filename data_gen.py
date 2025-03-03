@@ -81,7 +81,7 @@ def random_youtube_record():
         ]
     }
 
-def create_large_json(num_records=100000):
+def create_large_json(num_records):
     data = []
     for _ in range(num_records):
         src = random_source()
@@ -95,6 +95,6 @@ def create_large_json(num_records=100000):
 
 if __name__ == "__main__":
     # Generate 100k records (this can be scaled to millions).
-    large_data = create_large_json(num_records=10000)
-    with open("sample_data_10K.json", "w", encoding="utf-8") as f:
+    large_data = create_large_json(num_records=50000)
+    with open("sample_data_50K.json", "w", encoding="utf-8") as f:
         json.dump(large_data, f, ensure_ascii=False)
